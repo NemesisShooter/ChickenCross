@@ -1,0 +1,15 @@
+#!/bin/bash
+echo x
+echo x
+echo x
+echo x
+echo x
+echo x
+echo x
+echo x
+echo Build!
+g++ -g -c theGame.cpp -std=c++11
+g++ -o game theGame.o -lSDL2 -lSDL2_image
+echo Run!
+./game
+
