@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <vector>
+#include <string>
 
 bool InitEverything();
 bool InitSDL();
@@ -15,12 +16,14 @@ void WallAdd();
 void CollectibleAdd();
 void EnemyMove();
 void RPlayerPosition();
+int GameEnd();
+int DeadEnd();
 
 bool CheckCollision(const SDL_Rect &rect1, const SDL_Rect &rect2);
 bool CheckCollisionEnemy();
 bool CheckCollisionWall();
 bool CheckCollisionCollectible();
-void WallCollision();
+bool WallCollision();
 
 //Position of the window
 int posX = 100;
@@ -145,13 +148,15 @@ void RunGame()
 
 	//Check collisions against enemies
 	if (CheckCollisionEnemy())
-		RPlayerPosition();
+		RPlayerPosition(),
+		DeadEnd();
 	//Check collision against collectible
 	if (CheckCollisionCollectible());
 
 	//Check collision against top bar
 	if (playerPos.y<(topBar.y+topBar.h))
-		RPlayerPosition();
+		RPlayerPosition(),
+		GameEnd(); 
 	if (playerPos.y>(bottomBar.y+bottomBar.h))
 		RPlayerPosition();
 	Render();
@@ -294,6 +299,36 @@ bool CheckCollision(const SDL_Rect &rect1, const SDL_Rect &rect2)
 	return true;
 }
 
+bool WallCollision(const SDL_Rect &rect1, const SDL_Rect &rect2)
+{
+
+		//finding edges of rect1
+	int left1 = rect1.x;
+	int right1 = rect1.x + rect1.w;
+	int top1 = rect1.y;
+	int bottom1 = rect1.y + rect1.h;
+
+	//finding edges of rect2
+	int left2 = rect2.x;
+	int right2 = rect2.x + rect2.w;
+	int top2 = rect2.y;
+	int bottom2 = rect2.y + rect2.h;
+
+	//checking edges
+	if(left1<right2)
+
+	//checking edges
+	if(left1<right2)
+		return false;
+	if(right1>left2)
+		return false;
+	if(top1<bottom2)
+		return false;
+	if(bottom1>top2)
+		return false;
+	return true;
+}
+
 bool CheckCollisionEnemy()
 {
 	for(const auto &p:enemies)
@@ -318,7 +353,7 @@ bool CheckCollisionWall()
 {
 	for(const auto &p:walls)
 	{
-		if(CheckCollision(p.pos, playerPos))
+		if(WallCollision(p.pos, playerPos))
 			return true;
 	}
 	return false;
@@ -360,7 +395,19 @@ void CollectibleAdd()
 	{
 		collectibles.push_back(Collectible({rand()%300,lastEnemyPosition,20,20}));
 	}
-	lastEnemyPosition += 5;
+	lastEnemyPosition -= 100;
+}
+
+using namespace std;
+int GameEnd() 
+{ 
+	cout << "You Won, Try Again?" <<endl;
+}
+
+using namespace std;
+int DeadEnd()
+{ 
+	cout << "Oops You Are Dead, Try Again?" <<endl;
 }
  
 void RPlayerPosition()
@@ -368,15 +415,3 @@ void RPlayerPosition()
 	playerPos.x = ( sizeX / 2 ) - ( playerPos.w / 2 );
 	playerPos.y = sizeY - bottomBar.h;
 }
-
-int WallCollision(SDL_Rect *rect1, SDL_Rect *rect2)
-{
-   if (rect1->x + rect1->w < rect2->x ||
-       rect1->x > rect2->x + rect2->w ||
-       rect1->y + rect1->h < rect2->y ||
-       rect1->y > rect2->y + rect2->h)
-      return 0;
-   
-   else
-      return 1;
-}# ChickenCross
