@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <assert.h>
+#include <unistd.h>
 
 bool InitEverything();
 bool InitSDL();
@@ -26,7 +27,6 @@ int HeyCoin();
 int ThatsAWall();
 
 bool CheckCollision(const SDL_Rect &rect1, const SDL_Rect &rect2);
-bool WallCollide(const SDL_Rect &rect1, const SDL_Rect &rect2);
 bool CheckCollisionEnemy();
 bool CheckCollisionWall();
 bool CheckCollisionCollectible();
@@ -95,17 +95,17 @@ int main(int argc, char* args[])
 		return -1;
 	EnemyAdd();
 	EnemyAdd();
-
+	EnemyAdd();
+	EnemyAdd();
+	EnemyAdd();
+	EnemyAdd();
+	
+	WallAdd();
+	WallAdd();
 	WallAdd();
 	WallAdd();
 
 	CollectibleAdd();
-
-	EnemyAdd();
-	EnemyAdd();
-
-	WallAdd();
-	WallAdd();
 
 	//Initialising top and bottom bar
 	topBar.x = 0;
@@ -165,19 +165,23 @@ void RunGame()
 		DeadEnd();
 
 	//Check collision against coin
-	if (CheckCollisionCollectible());
+	if (CheckCollisionCollectible())
+		HeyCoin();
 
 	//Check collision against wall
 	if (CheckCollisionWall())
-		ThatsAWall();
+		ThatsAWall(),
+		RPlayerPosition();
 
 	//Check collision against top bar
 	if (playerPos.y<(topBar.y+topBar.h))
 		RPlayerPosition(),
 		GameEnd(); 
+	//Check collision against bottom bar
 	if (playerPos.y>(bottomBar.y+bottomBar.h))
 		RPlayerPosition();
 	Render();
+
 	//Adding delay to make game run at 60 FPS
 	SDL_Delay(16); 	
 	}
@@ -317,28 +321,6 @@ bool CheckCollision(const SDL_Rect &rect1, const SDL_Rect &rect2)
 	return true;
 }
 
-bool WallCollide(const SDL_Rect &rect1, const SDL_Rect &rect2)
-{
-	//finding edges of rect1
-	int left1 = rect1.x;
-	int right1 = rect1.x + rect1.w;
-	int top1 = rect1.y;
-	int bottom1 = rect1.y + rect1.h;
-	
-	//finding edges of rect2
-	int left2 = rect2.x;
-	int right2 = rect2.x + rect2.w;
-	int top2 = rect2.y;
-	int bottom2 = rect2.y + rect2.h;
-
-	bool noOverlap = right1 > left2 ||
-                     right2 > left1 ||
-                     top1 > bottom2 ||
-                     top2 > bottom1;
-
-    return !noOverlap;
-}
-
 bool CheckCollisionEnemy()
 {
 	for(const auto &p:enemies)
@@ -354,7 +336,6 @@ bool CheckCollisionCollectible()
 	for(const auto &p:collectibles)
 	{
 		if(CheckCollision(p.pos, playerPos))
-			HeyCoin();
 			return false;
 	}
 	return false;
@@ -364,7 +345,7 @@ bool CheckCollisionWall()
 {
 	for(const auto &p:walls)
 	{
-		if(WallCollide(p.pos, playerPos))
+		if(CheckCollision(p.pos, playerPos))
 			return true;
 	}
 	return false;
@@ -374,11 +355,11 @@ void EnemyAdd()
 {
 	if((rand()%2)==0)
 	{
-		enemies.push_back(Enemy({rand()%300,lastEnemyPosition,20,20}, 1, Direction::Right));
+		enemies.push_back(Enemy({rand()%400,lastEnemyPosition,20,20}, 1, Direction::Right));
 	}
 	else
 	{
-		enemies.push_back(Enemy({rand()%300,lastEnemyPosition,20,20}, 1, Direction::Left));
+		enemies.push_back(Enemy({rand()%400,lastEnemyPosition,20,20}, 1, Direction::Left));
 	}
 	lastEnemyPosition += 25;
 }
@@ -387,26 +368,26 @@ void WallAdd()
 {
 	if((rand()%2)==0)
 	{
-		walls.push_back(Wall({rand()%300,lastWallPosition,20,20}));
+		walls.push_back(Wall({rand()%400,lastWallPosition,50,20}));
 	}
 	else
 	{
-		walls.push_back(Wall({rand()%300,lastWallPosition,20,20}));
+		walls.push_back(Wall({rand()%400,lastWallPosition,50,10}));
 	}
 	lastWallPosition += 50;
 }
 
 void CollectibleAdd()
 {
-	if((rand()%2)==0)
+	if((rand())==0)
 	{
-		collectibles.push_back(Collectible({rand()%300,lastCoinPosition,20,20}));
+		collectibles.push_back(Collectible({rand()%400,lastCoinPosition,20,20}));
 	}
 	else
 	{
-		collectibles.push_back(Collectible({rand()%300,lastCoinPosition,20,20}));
+		collectibles.push_back(Collectible({rand()%400,lastCoinPosition,20,20}));
 	}
-	lastCoinPosition += 25;
+	lastCoinPosition ==0;
 }
 
 using namespace std;
