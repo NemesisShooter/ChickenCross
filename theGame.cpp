@@ -165,8 +165,7 @@ void RunGame()
 		DeadEnd();
 
 	//Check collision against coin
-	if (CheckCollisionCollectible())
-		HeyCoin();
+	if (CheckCollisionCollectible());
 
 	//Check collision against wall
 	if (CheckCollisionWall())
@@ -336,6 +335,7 @@ bool CheckCollisionCollectible()
 	for(const auto &p:collectibles)
 	{
 		if(CheckCollision(p.pos, playerPos))
+			HeyCoin();
 			return false;
 	}
 	return false;
@@ -387,7 +387,7 @@ void CollectibleAdd()
 	{
 		collectibles.push_back(Collectible({rand()%400,lastCoinPosition,20,20}));
 	}
-	lastCoinPosition ==0;
+	lastCoinPosition -=5;
 }
 
 using namespace std;
